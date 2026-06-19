@@ -13,7 +13,7 @@ interface Props {
 export const AprobacionModal: React.FC<Props> = ({
   account, processing, onApprove, onReject, onClose,
 }) => (
-  <div className="modal-backdrop" onClick={onClose}>
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
     <div
       className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-scaleIn"
       onClick={(e) => e.stopPropagation()}

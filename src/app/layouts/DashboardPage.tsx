@@ -36,7 +36,13 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     getDashboardStatsApi()
       .then((r) => setStats(r.data))
-      .catch(() => toast.error("No se pudieron cargar las estadísticas"))
+      .catch((err: unknown) => {
+        const status = (err as { response?: { status?: number } })?.response?.status;
+        if (status !== 401) {
+          toast.error("No se pudieron cargar las estadísticas del dashboard");
+        }
+        setStats({});
+      })
       .finally(() => setLoading(false));
   }, []);
 

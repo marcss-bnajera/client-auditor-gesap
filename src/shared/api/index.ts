@@ -3,3 +3,6 @@ export * from "./dashboard";
 export * from "./patientAccounts";
 export * from "./auditLogs";
 export * from "./hospitals";
+export * from "./roles";
+export * from "./users";
+export * from "./sessions";

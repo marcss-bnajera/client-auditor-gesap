@@ -1,20 +1,41 @@
 import { axiosAuditor } from "./api";
 
+export type HospitalLevel =
+  | "REFERENCIA_NACIONAL" | "ESPECIALIZADO" | "REGIONAL" | "DEPARTAMENTAL"
+  | "DISTRITAL" | "CENTRO_SALUD_A" | "CENTRO_SALUD_B" | "CAP";
+
+export const HOSPITAL_LEVEL_LABELS: Record<HospitalLevel, string> = {
+  REFERENCIA_NACIONAL: "Referencia Nacional",
+  ESPECIALIZADO:       "Especializado",
+  REGIONAL:            "Regional",
+  DEPARTAMENTAL:       "Departamental",
+  DISTRITAL:           "Distrital",
+  CENTRO_SALUD_A:      "Centro de Salud A",
+  CENTRO_SALUD_B:      "Centro de Salud B",
+  CAP:                 "CAP",
+};
+
 export interface Hospital {
-  id: number;
-  name: string;
-  code: string;
-  address?: string;
-  phone?: string;
-  isActive: boolean;
-  createdAt: string;
+  id:           number;
+  code:         string;
+  name:         string;
+  level:        HospitalLevel;
+  department:   string;
+  municipality: string;
+  address?:     string;
+  phone?:       string;
+  isActive:     boolean;
+  createdAt:    string;
 }
 
 export interface HospitalPayload {
-  name: string;
-  code: string;
-  address?: string;
-  phone?: string;
+  code:         string;
+  name:         string;
+  level:        HospitalLevel;
+  department:   string;
+  municipality: string;
+  address?:     string;
+  phone?:       string;
 }
 
 export const getHospitalsApi = () =>

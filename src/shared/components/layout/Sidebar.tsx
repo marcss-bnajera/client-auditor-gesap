@@ -1,32 +1,50 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import imgLogo from "../../../assets/img/GESAPLogo.svg";
 import {
-  FiHome, FiCheckCircle, FiActivity,
-  FiHardDrive, FiLogOut, FiUser,
+  FiHome, FiUsers, FiCheckCircle, FiShield,
+  FiKey, FiList, FiDatabase, FiBarChart2, FiHardDrive, FiLogOut, FiWifi, FiX,
 } from "react-icons/fi";
 import { useAuthStore } from "../../../features/auth/store/authStore";
 import toast from "react-hot-toast";
 
-const navItems = [
-  { path: "/auditor/dashboard",  icon: FiHome,        label: "Dashboard" },
-  { path: "/auditor/cuentas",    icon: FiCheckCircle, label: "Cuentas de Pacientes" },
-  { path: "/auditor/auditoria",  icon: FiActivity,    label: "Auditoría de Accesos" },
-  { path: "/auditor/hospitales", icon: FiHardDrive,   label: "Hospitales" },
+type AllowedRole = "AUDITOR" | "SUPER_AUDITOR";
+
+interface NavItem {
+  path: string;
+  icon: React.ElementType;
+  label: string;
+  end?: boolean;
+  roles: AllowedRole[];
+}
+
+const navItems: NavItem[] = [
+  { path: "/auditor/dashboard",     icon: FiHome,        label: "Dashboard",             end: true, roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/usuarios",      icon: FiUsers,       label: "Gestión de Usuarios",              roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/cuentas",       icon: FiCheckCircle, label: "Aprobación de Cuentas",            roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/seguridad",     icon: FiShield,      label: "Seguridad y Roles",                roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/auditoria",     icon: FiKey,         label: "Registro de Accesos",              roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/bitacora",      icon: FiList,        label: "Bitácora de Acciones",             roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/sesiones",      icon: FiWifi,        label: "Sesiones Activas",                 roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/hospitales",    icon: FiHardDrive,   label: "Hospitales",                       roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/mantenimiento", icon: FiDatabase,    label: "Mantenimiento",                    roles: ["AUDITOR", "SUPER_AUDITOR"] },
+  { path: "/auditor/reportes",      icon: FiBarChart2,   label: "Reportes",                         roles: ["AUDITOR", "SUPER_AUDITOR"] },
 ];
 
-export const Sidebar = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
-  const displayName = user
-    ? `${user.firstName} ${user.lastName}`.trim()
-    : "Auditor";
+  const role = (user?.role ?? "") as AllowedRole;
+  const visibleItems = navItems.filter((item) => item.roles.includes(role));
 
-  const initials = displayName
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
+  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() : "Usuario";
+  const displayRole = user?.role === "SUPER_AUDITOR" ? "Super Auditor" : "Auditor";
+  const initials    = displayName.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
 
   const handleLogout = () => {
     logout();
@@ -35,16 +53,31 @@ export const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-gradient-to-b from-[#0A2647] to-[#0D3B6E] flex flex-col shadow-2xl shrink-0">
-      {/* Header */}
+    <aside className={`
+      fixed inset-y-0 left-0 z-50 w-64
+      lg:static lg:z-auto lg:translate-x-0
+      transform transition-transform duration-300 ease-in-out
+      ${isOpen ? "translate-x-0" : "-translate-x-full"}
+      bg-gradient-to-b from-[#0A2647] to-[#0D3B6E] flex flex-col shadow-2xl shrink-0
+    `}>
+      {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-6 border-b border-white/10">
         <div className="bg-white/10 border border-white/15 p-2.5 rounded-xl">
           <img src={imgLogo} alt="GESAP" className="h-7 w-7 object-contain brightness-0 invert" />
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <h1 className="text-white font-bold text-base leading-tight tracking-tight">GESAP</h1>
-          <p className="text-blue-300 text-xs font-medium">Portal de Auditoría</p>
+          <p className="text-blue-300 text-xs font-medium">
+            {user?.role === "SUPER_AUDITOR" ? "Portal Admin" : "Portal Auditoría"}
+          </p>
         </div>
+        <button
+          onClick={onClose}
+          className="lg:hidden text-white/60 hover:text-white p-1 rounded-lg transition-colors"
+          aria-label="Cerrar menú"
+        >
+          <FiX size={20} />
+        </button>
       </div>
 
       <div className="px-5 pt-6 pb-2">
@@ -52,10 +85,11 @@ export const Sidebar = () => {
       </div>
 
       <nav className="flex-1 px-3 space-y-0.5 pb-4">
-        {navItems.map((item) => (
+        {visibleItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
+            end={item.end}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all text-sm font-medium group ${
                 isActive
@@ -77,15 +111,15 @@ export const Sidebar = () => {
         ))}
       </nav>
 
-      {/* User info */}
+      {/* User footer */}
       <div className="border-t border-white/10 p-4">
         <div className="flex items-center gap-3 px-1">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#00ACC1] to-[#26A69A] flex items-center justify-center shrink-0 shadow-md text-white text-sm font-bold">
-            {initials || <FiUser size={15} />}
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#00ACC1] to-[#26A69A] flex items-center justify-center shrink-0 shadow-md">
+            <span className="text-white text-xs font-bold">{initials}</span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-white text-sm font-semibold truncate">{displayName}</p>
-            <p className="text-blue-300 text-xs truncate">{user?.role ?? "AUDITOR"}</p>
+            <p className="text-blue-300 text-xs truncate">{displayRole}</p>
           </div>
           <button
             onClick={handleLogout}

@@ -1,7 +1,11 @@
-import { FiBell, FiUser } from "react-icons/fi";
+import { FiBell, FiUser, FiMenu } from "react-icons/fi";
 import { useAuthStore } from "../../../features/auth/store/authStore";
 
-export const Navbar = () => {
+interface NavbarProps {
+  onMenuOpen?: () => void;
+}
+
+export const Navbar = ({ onMenuOpen }: NavbarProps) => {
   const { user } = useAuthStore();
 
   const displayName = user
@@ -15,10 +19,21 @@ export const Navbar = () => {
     .join("");
 
   return (
-    <header className="bg-white/70 backdrop-blur-md border-b border-blue-100 px-6 h-16 flex items-center justify-between sticky top-0 z-40 shrink-0">
-      <div>
-        <p className="text-[#0A2647] font-bold text-sm">Portal de Auditoría</p>
-        <p className="text-slate-400 text-xs">Sistema Hospitalario GESAP</p>
+    <header className="bg-white/70 backdrop-blur-md border-b border-blue-100 px-4 lg:px-6 h-16 flex items-center justify-between sticky top-0 z-40 shrink-0">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuOpen}
+          className="lg:hidden p-2 text-slate-500 hover:text-[#0A2647] rounded-xl hover:bg-blue-50 transition-colors"
+          aria-label="Abrir menú"
+        >
+          <FiMenu size={22} />
+        </button>
+        <div>
+          <p className="text-[#0A2647] font-bold text-sm">
+            {user?.role === "SUPER_AUDITOR" ? "Portal Administrativo" : "Portal de Auditoría"}
+          </p>
+          <p className="text-slate-400 text-xs">Sistema Hospitalario GESAP</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
@@ -32,7 +47,9 @@ export const Navbar = () => {
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-[#0A2647] leading-tight">{displayName}</p>
-            <p className="text-xs text-slate-400">{user?.role ?? "AUDITOR"}</p>
+            <p className="text-xs text-slate-400">
+              {user?.role === "SUPER_AUDITOR" ? "Super Auditor" : "Auditor"}
+            </p>
           </div>
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#0E6BA8] to-[#00ACC1] flex items-center justify-center text-white text-sm font-bold shadow-md">
             {initials || <FiUser size={15} />}

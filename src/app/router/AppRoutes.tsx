@@ -6,6 +6,12 @@ import { DashboardPage } from "../layouts/DashboardPage";
 import { AprobacionCuentasPage } from "../../features/aprobacionCuentas/components/AprobacionCuentasPage";
 import { AuditoriaAccesoPage } from "../../features/auditoriaAcceso/components/AuditoriaAccesoPage";
 import { HospitalesPage } from "../../features/hospitales/components/HospitalesPage";
+import { GestionUsuariosPage } from "../../features/gestionUsuarios/components/GestionUsuariosPage";
+import { SeguridadRolesPage } from "../../features/seguridadRoles/components/SeguridadRolesPage";
+import { MantenimientoDatosPage } from "../../features/mantenimientoDatos/components/MantenimientoDatosPage";
+import { ReportesSistemaPage } from "../../features/reportesSistema/components/ReportesSistemaPage";
+import { SesionesActivasPage } from "../../features/sesionesActivas/components/SesionesActivasPage";
+import { BitacoraAccionesPage } from "../../features/bitacoraAcciones/components/BitacoraAccionesPage";
 
 export const AppRoutes = () => (
   <Routes>
@@ -20,10 +26,16 @@ export const AppRoutes = () => (
       }
     >
       <Route index element={<Navigate to="dashboard" replace />} />
-      <Route path="dashboard"  element={<DashboardPage />} />
-      <Route path="cuentas"    element={<AprobacionCuentasPage />} />
-      <Route path="auditoria"  element={<AuditoriaAccesoPage />} />
-      <Route path="hospitales" element={<HospitalesPage />} />
+      <Route path="dashboard"    element={<DashboardPage />} />
+      <Route path="usuarios"     element={<GestionUsuariosPage />} />
+      <Route path="cuentas"      element={<AprobacionCuentasPage />} />
+      <Route path="seguridad"    element={<SeguridadRolesPage />} />
+      <Route path="auditoria"    element={<AuditoriaAccesoPage />} />
+      <Route path="bitacora"     element={<BitacoraAccionesPage />} />
+      <Route path="sesiones"     element={<SesionesActivasPage />} />
+      <Route path="hospitales"   element={<HospitalesPage />} />
+      <Route path="mantenimiento" element={<MantenimientoDatosPage />} />
+      <Route path="reportes"     element={<ReportesSistemaPage />} />
     </Route>
 
     <Route path="*" element={

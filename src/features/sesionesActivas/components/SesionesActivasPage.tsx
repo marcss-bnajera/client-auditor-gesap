@@ -137,7 +137,72 @@ export const SesionesActivasPage = () => {
 
       {/* Tabla */}
       <div className="bg-white/80 border border-blue-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+
+        {/* Vista móvil — tarjetas */}
+        <div className="md:hidden">
+          {loading ? (
+            <div className="py-14 text-center">
+              <FiLoader className="animate-spin text-[#0E6BA8] mx-auto" size={24} />
+              <p className="text-slate-400 text-sm mt-2">Cargando sesiones...</p>
+            </div>
+          ) : sessions.length === 0 ? (
+            <div className="py-12 text-center px-4">
+              <FiWifi className="mx-auto text-slate-300 mb-2" size={32} />
+              <p className="text-slate-400 text-sm font-medium">No hay sesiones activas</p>
+              <p className="text-slate-300 text-xs mt-1">Las sesiones aparecen cuando los usuarios inician sesión</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-blue-50">
+              {sessions.map((session) => {
+                const isSelf = session.userId === currentUserId;
+                const status = activityColor(session.lastActiveAt);
+                return (
+                  <div key={session.id} className={`px-4 py-3.5 ${isSelf ? "bg-blue-50/60" : ""}`}>
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#0E6BA8] to-[#00ACC1] flex items-center justify-center text-white text-xs font-bold shrink-0 mt-0.5">
+                        {session.userName[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-semibold text-[#0A2647] text-sm">{session.userName}</p>
+                          {isSelf && <span className="text-[10px] text-blue-400 font-medium">Tu sesión</span>}
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-semibold ${status.text}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${status.dot} ${status.dot === "bg-emerald-500" ? "animate-pulse" : ""}`} />
+                            {status.label}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400 truncate">{session.userEmail}</p>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#0E6BA8]/10 text-[#0E6BA8]">
+                            {session.roleName}
+                          </span>
+                          {session.hospital?.name && (
+                            <span className="text-[10px] text-slate-400">{session.hospital.name}</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-[10px] text-slate-400 flex-wrap">
+                          <span className="font-mono">{session.ipAddress ?? "—"}</span>
+                          <span>{new Date(session.loginAt).toLocaleString("es-GT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+                        </div>
+                      </div>
+                      {!isSelf && (
+                        <button
+                          onClick={() => setKicking(session)}
+                          className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1.5 rounded-lg transition-colors shrink-0"
+                        >
+                          <FiLogOut size={13} /> Cerrar
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Vista escritorio — tabla */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#EBF5FB] border-b border-blue-100">
@@ -226,6 +291,7 @@ export const SesionesActivasPage = () => {
             </tbody>
           </table>
         </div>
+
         <div className="px-5 py-3 bg-[#EBF5FB]/50 border-t border-blue-100">
           <span className="text-xs text-slate-400">{sessions.length} sesiones activas en el sistema</span>
         </div>

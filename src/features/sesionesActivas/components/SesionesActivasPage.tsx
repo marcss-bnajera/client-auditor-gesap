@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
 import {
-  FiActivity, FiLoader, FiRefreshCw, FiLogOut, FiWifi, FiClock,
+  FiActivity, FiLoader, FiRefreshCw, FiLogOut, FiWifi,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { getActiveSessionsApi, kickSessionApi, type ActiveSession } from "../../../shared/api/sessions";
@@ -107,18 +107,15 @@ export const SesionesActivasPage = () => {
             )}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <div className={`flex items-center gap-1.5 text-xs border rounded-xl px-3 py-2 ${
             wsConnected
               ? "text-emerald-600 bg-emerald-50 border-emerald-200"
               : "text-slate-400 bg-white border-blue-100"
           }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${wsConnected ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
-            {wsConnected ? "Tiempo real activo" : "Conectando..."}
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 bg-white border border-blue-100 rounded-xl px-3 py-2">
-            <FiClock size={12} className="text-[#00ACC1]" />
-            Polling 8s
+            <span className="hidden sm:inline">{wsConnected ? "Tiempo real activo" : "Conectando..."}</span>
+            <span className="sm:hidden">{wsConnected ? "En vivo" : "..."}</span>
           </div>
           <button
             onClick={() => fetchSessions()}
@@ -131,7 +128,7 @@ export const SesionesActivasPage = () => {
       </div>
 
       {/* Leyenda */}
-      <div className="flex items-center gap-4 text-xs text-slate-500 bg-white/80 border border-blue-100 rounded-xl px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 bg-white/80 border border-blue-100 rounded-xl px-4 py-2.5">
         <span className="font-semibold text-[#144272]">Última actividad:</span>
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> &lt; 5 min</span>
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400" /> 5–15 min</span>

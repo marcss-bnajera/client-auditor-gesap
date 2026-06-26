@@ -140,7 +140,72 @@ export const GestionUsuariosPage = () => {
 
       {/* Tabla */}
       <div className="bg-white/80 border border-blue-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+
+        {/* Vista móvil — tarjetas */}
+        <div className="md:hidden">
+          {loading ? (
+            <div className="py-14 text-center">
+              <FiLoader className="animate-spin text-[#0E6BA8] mx-auto" size={24} />
+              <p className="text-slate-400 text-sm mt-2">Cargando usuarios...</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-12 text-center">
+              <FiUsers className="mx-auto text-slate-300 mb-2" size={32} />
+              <p className="text-slate-400 text-sm">No se encontraron usuarios</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-blue-50">
+              {filtered.map((u) => {
+                const isSelf = u.id === (currentUser as { id?: number } | null)?.id;
+                return (
+                  <div key={u.id} className="px-4 py-3.5 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0E6BA8] to-[#00ACC1] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      {u.firstName[0]}{u.lastName[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-semibold text-[#0A2647] text-sm truncate">{u.firstName} {u.lastName}</p>
+                        {isSelf && <span className="text-[10px] text-blue-400 font-medium shrink-0">Tú</span>}
+                      </div>
+                      <p className="text-xs text-slate-500 truncate">{u.email}</p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#0E6BA8]/10 text-[#0E6BA8]">
+                          {u.role.name}
+                        </span>
+                        <span className="text-[10px] text-slate-400 truncate">
+                          {u.hospital?.name ?? (u.fleetId ? `Flota: ${u.fleetId}` : "—")}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => !isSelf && setToggleUser(u)}
+                        disabled={isSelf}
+                        title={isSelf ? "No puedes desactivarte a ti mismo" : u.isActive ? "Desactivar" : "Activar"}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+                          isSelf ? "opacity-40 cursor-not-allowed" :
+                          u.isActive ? "bg-emerald-500 hover:bg-emerald-600 cursor-pointer" : "bg-slate-300 hover:bg-slate-400 cursor-pointer"
+                        }`}
+                      >
+                        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform ${
+                          u.isActive ? "translate-x-4" : "translate-x-1"
+                        }`} />
+                      </button>
+                      <button onClick={() => openEdit(u)}
+                        className="p-1.5 text-[#0E6BA8] hover:bg-blue-100 rounded-lg transition-colors"
+                        title="Editar">
+                        <FiEdit2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Vista escritorio — tabla */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#EBF5FB] border-b border-blue-100">
@@ -190,7 +255,6 @@ export const GestionUsuariosPage = () => {
                         {u.hospital?.name ?? (u.fleetId ? `Flota: ${u.fleetId}` : "—")}
                       </td>
                       <td className="px-5 py-3.5">
-                        {/* Toggle visual switch */}
                         <button
                           onClick={() => !isSelf && setToggleUser(u)}
                           disabled={isSelf}
@@ -222,6 +286,7 @@ export const GestionUsuariosPage = () => {
             </tbody>
           </table>
         </div>
+
         <div className="px-5 py-3 bg-[#EBF5FB]/50 border-t border-blue-100 flex items-center justify-between">
           <span className="text-xs text-slate-400">
             Mostrando {filtered.length} de {users.length} usuarios

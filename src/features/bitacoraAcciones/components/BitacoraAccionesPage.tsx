@@ -93,7 +93,7 @@ export const BitacoraAccionesPage: React.FC = () => {
       {showFilters && (
         <div className="bg-white border border-blue-100 rounded-2xl p-5 shadow-sm animate-fadeIn">
           <h3 className="text-sm font-bold text-[#0A2647] mb-4">Filtros avanzados</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {(["action", "entity"] as const).map((field) => (
               <div key={field}>
                 <label className="block text-[10px] font-semibold text-[#144272] mb-1.5 uppercase tracking-wide">
@@ -154,7 +154,38 @@ export const BitacoraAccionesPage: React.FC = () => {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-blue-50 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+
+          {/* Vista móvil — tarjetas */}
+          <div className="md:hidden divide-y divide-blue-50">
+            {visible.map((log) => (
+              <div key={log.id} className="px-4 py-3.5">
+                <div className="flex items-start gap-3">
+                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 mt-0.5 ${badgeClass(log.action)}`}>
+                    {ACTION_LABELS[log.action.toUpperCase()] ?? log.action}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[#0A2647] text-sm font-semibold">
+                      {log.entity}
+                      {log.entityId && <span className="text-slate-400 text-xs ml-1">#{log.entityId}</span>}
+                    </p>
+                    {log.user && (
+                      <p className="text-xs text-slate-500 truncate">
+                        {log.user.firstName} {log.user.lastName} · {log.user.email}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-3 mt-1 text-[10px] text-slate-400 flex-wrap">
+                      {log.hospital?.name && <span>{log.hospital.name}</span>}
+                      <span className="font-mono">{log.ipAddress ?? "—"}</span>
+                      <span>{new Date(log.createdAt).toLocaleString("es-GT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Vista escritorio — tabla */}
+          <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-blue-50 bg-[#EBF5FB]">
@@ -196,6 +227,7 @@ export const BitacoraAccionesPage: React.FC = () => {
             </tbody>
           </table>
           </div>
+
           <div className="px-5 py-2.5 bg-[#EBF5FB]/50 border-t border-blue-50">
             <span className="text-xs text-slate-400">{visible.length} registros mostrados</span>
           </div>

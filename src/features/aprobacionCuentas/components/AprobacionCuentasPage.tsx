@@ -88,9 +88,9 @@ export const AprobacionCuentasPage: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-fadeIn">
+    <div className="space-y-5 animate-fadeIn">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-2xl font-extrabold text-[#0A2647]">Cuentas de Pacientes</h2>
           <p className="text-slate-500 text-sm mt-0.5">
@@ -99,7 +99,7 @@ export const AprobacionCuentasPage: React.FC = () => {
         </div>
         <button
           onClick={fetch}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[#0E6BA8] border border-blue-200 bg-white rounded-xl hover:bg-blue-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-[#0E6BA8] border border-blue-200 bg-white rounded-xl hover:bg-blue-50 transition-colors self-start sm:self-auto"
         >
           <FiRefreshCw size={14} /> Actualizar
         </button>
@@ -135,6 +135,65 @@ export const AprobacionCuentasPage: React.FC = () => {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-blue-50 shadow-sm overflow-hidden">
+
+          {/* Vista móvil — tarjetas */}
+          <div className="md:hidden divide-y divide-blue-50">
+            {filtered.map((account) => (
+              <div key={account.id} className="px-4 py-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#0E6BA8] to-[#00ACC1] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    {account.email[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-[#0A2647] font-semibold text-sm truncate">{account.email}</p>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${statusBadge[account.status]}`}>
+                        {statusLabel[account.status]}
+                      </span>
+                    </div>
+                    <p className="text-xs font-mono text-slate-500 mt-0.5">{account.dpi}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      {new Date(account.createdAt).toLocaleDateString("es-GT")}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {account.status === "PENDING" && (
+                      <>
+                        <button
+                          onClick={() => handleApprove(account.id)}
+                          disabled={processing === account.id}
+                          className="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
+                          title="Aprobar"
+                        >
+                          {processing === account.id
+                            ? <FiLoader className="animate-spin" size={15} />
+                            : <FiCheckCircle size={15} />
+                          }
+                        </button>
+                        <button
+                          onClick={() => handleReject(account.id)}
+                          disabled={processing === account.id}
+                          className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                          title="Rechazar"
+                        >
+                          <FiXCircle size={15} />
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={() => setSelected(account)}
+                      className="text-xs text-[#0E6BA8] font-medium px-2 py-1.5 hover:bg-blue-50 rounded-lg transition-colors"
+                    >
+                      Ver
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Vista escritorio — tabla */}
+          <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-blue-50 bg-[#EBF5FB]">
@@ -202,6 +261,7 @@ export const AprobacionCuentasPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

@@ -65,7 +65,7 @@ export const AuditoriaAccesoPage: React.FC = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 animate-fadeIn">
+    <div className="space-y-5 animate-fadeIn">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -96,7 +96,7 @@ export const AuditoriaAccesoPage: React.FC = () => {
       {showFilters && (
         <div className="bg-white border border-blue-100 rounded-2xl p-5 shadow-sm animate-fadeIn">
           <h3 className="text-sm font-bold text-[#0A2647] mb-4">Filtros</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-[10px] font-semibold text-[#144272] mb-1.5 uppercase tracking-wide">Desde</label>
               <input type="date" value={filters.from ?? ""}
@@ -147,7 +147,49 @@ export const AuditoriaAccesoPage: React.FC = () => {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-blue-50 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+
+          {/* Vista móvil — tarjetas */}
+          <div className="md:hidden divide-y divide-blue-50">
+            {visible.map((s) => (
+              <div key={s.id} className="px-4 py-3.5">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#0E6BA8] to-[#00ACC1] flex items-center justify-center text-white text-[10px] font-bold shrink-0 mt-0.5">
+                    {s.userName[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-[#0A2647] text-sm font-semibold">{s.userName}</p>
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        s.isActive
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                          : "bg-slate-100 text-slate-500 border border-slate-200"
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${s.isActive ? "bg-emerald-500" : "bg-slate-400"}`} />
+                        {s.isActive ? "Activa" : "Cerrada"}
+                      </span>
+                    </div>
+                    <p className="text-slate-400 text-xs truncate">{s.userEmail}</p>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#0E6BA8]/10 text-[#0E6BA8]">
+                        {s.roleName}
+                      </span>
+                      {s.hospital?.name && (
+                        <span className="text-[10px] text-slate-400">{s.hospital.name}</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1 text-[10px] text-slate-400 flex-wrap">
+                      <span className="font-mono">{s.ipAddress ?? "—"}</span>
+                      <span>{parseAgent(s.userAgent)}{parseOS(s.userAgent) ? ` / ${parseOS(s.userAgent)}` : ""}</span>
+                      <span>{new Date(s.loginAt).toLocaleString("es-GT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Vista escritorio — tabla */}
+          <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-blue-50 bg-[#EBF5FB]">
@@ -202,6 +244,7 @@ export const AuditoriaAccesoPage: React.FC = () => {
             </tbody>
           </table>
           </div>
+
           <div className="px-5 py-2.5 bg-[#EBF5FB]/50 border-t border-blue-50">
             <span className="text-xs text-slate-400">{visible.length} registros mostrados</span>
           </div>
